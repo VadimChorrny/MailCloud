@@ -8,22 +8,23 @@
         Title="Mail Cload by Chorrny Inc" Height="450" Width="800">
     <Grid>
         <!--Authorization-->
-        <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Visible">
+        <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Hidden" x:Name="gridAuth">
             <StackPanel>
                 <TextBlock Text="Enter username" FontSize="30" />
                 <TextBox x:Name="tbUsername" FontSize="30" />
-                <TextBlock Text="Enter login" FontSize="30"/>
-                <TextBox x:Name="tbLogin" FontSize="30" />
-                <Button x:Name="btnLogin" Height="50" Content="Login" FontSize="30" Margin="0 30 0 0" />
+                <TextBlock Text="Enter password" FontSize="30"/>
+                <TextBox x:Name="tbPassword" FontSize="30" />
+                <Button x:Name="btnLogin" Height="50" Content="Login" FontSize="30" Margin="0 30 0 0"  Click="btnLogin_Click"/>
             </StackPanel>
         </Grid>
         <!--Send Message-->
-        <Grid Visibility="Hidden">
+        <Grid Visibility="Visible" x:Name="gridMessage">
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
-                <RowDefinition Height="3*"/>
+                <RowDefinition Height="4*"/>
+                <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
 
@@ -45,7 +46,10 @@
             </WrapPanel>
             
             <WrapPanel Grid.Row="4" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <Button Content="Open file" FontSize="30" Width="700" />
+                <Button Content="Open file" FontSize="30" Width="700" Name="btnOpenFile" Foreground="Azure" Click="btnOpenFile_Click" />
+            </WrapPanel>
+            <WrapPanel Grid.Row="5" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Button Width="700" FontSize="30" Content="Send" Name="btnSend" Background="LightGreen" Foreground="White" Click="btnSend_Click" />
             </WrapPanel>
         </Grid>
     </Grid>

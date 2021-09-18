@@ -1,6 +1,8 @@
 using System;
+using System.ComponentModel;
 using System.Data.Entity;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace MailCloud.EF
 {
@@ -30,5 +32,6 @@ namespace MailCloud.EF
         public string Body { get; set; }
         public int? AccountId { get; set; }
         public Account Account { get; set; }
+
     }
 }
