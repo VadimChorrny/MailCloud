@@ -87,6 +87,14 @@
     <Compile Include="Migrations\202109181625475_myaccun.Designer.cs">
       <DependentUpon>202109181625475_myaccun.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202109200746145_tmp.cs" />
+    <Compile Include="Migrations\202109200746145_tmp.Designer.cs">
+      <DependentUpon>202109200746145_tmp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202109200748436_ds.cs" />
+    <Compile Include="Migrations\202109200748436_ds.Designer.cs">
+      <DependentUpon>202109200748436_ds.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -106,6 +114,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202109181625475_myaccun.resx">
       <DependentUpon>202109181625475_myaccun.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202109200746145_tmp.resx">
+      <DependentUpon>202109200746145_tmp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202109200748436_ds.resx">
+      <DependentUpon>202109200748436_ds.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

@@ -30,6 +30,8 @@ namespace MailCloud.EF
         public string To { get; set; }
         public string Theme { get; set; }
         public string Body { get; set; }
+        public DateTime Time { get; set; }
+        public DateTime Date { get; set; }
         public int? AccountId { get; set; }
         public Account Account { get; set; }
 

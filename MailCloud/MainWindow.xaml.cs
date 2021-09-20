@@ -64,8 +64,22 @@ namespace MailCloud
             }
 
         }
-
-        public void SendMail()
+        private Task WriteMessageInDataBase(string from,string to,string theme,string body)
+        {
+            userModel = new UserModel();
+            userModel.Messages.Add(new Message()
+            {
+                From = from,
+                To = to,
+                Theme = theme,
+                Body = body,
+                Time = DateTime.Now,
+                Date = DateTime.Now.Date
+            }) ;
+            userModel.SaveChanges();
+            return Task.CompletedTask;
+        }
+        public async Task<Task> SendMail()
         {
             // create a message object
             MailMessage message = new MailMessage(tbFrom.Text, tbTo.Text, tbTheme.Text, tbBody.Text);
@@ -73,12 +87,18 @@ namespace MailCloud
             //{
             //    message.Body = sr.ReadToEnd();
             //}
-            message.IsBodyHtml = false;
+
+            message.Body = $"<h2>{tbBody.Text}</h2>";
+
+            message.IsBodyHtml = true;
 
             message.Priority = MailPriority.High; // important
-            if(filename != null)
+            if (filename != null)
             {
-                message.Attachments.Add(new Attachment(filename));
+                foreach (var item in lbFiles.Items)
+                {
+                    message.Attachments.Add(new Attachment((string)item));
+                }
             }
 
             // create a send object
@@ -92,13 +112,17 @@ namespace MailCloud
             client.SendCompleted += Client_SendCompleted;
 
             // call asynchronous message sending
-            client.SendAsync(message, "blablatoken");
+            client.SendAsync(message, "ChorrnyToken");
+            await WriteMessageInDataBase(tbFrom.Text, tbTo.Text, tbTheme.Text, tbBody.Text);
+            return Task.CompletedTask;
         }
+
         private void Client_SendCompleted(object sender, AsyncCompletedEventArgs e)
         {
             MessageBox.Show($"Message was sent! Token:{e.UserState}");
         }
 
+        #region buttons
         private void btnLogin_Click(object sender, RoutedEventArgs e)
         {
             Authorizate();
@@ -107,9 +131,9 @@ namespace MailCloud
         private void btnOpenFile_Click(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.FileName = "Photo"; // Default file name
-            dlg.DefaultExt = ".png"; // Default file extension
-            dlg.Filter = "Only naked photo (.png)|*.png"; // Filter files by extension
+            dlg.FileName = "My dick"; // Default file name
+            dlg.DefaultExt = "*"; // Default file extension
+            dlg.Filter = "Only naked photo (.png)|*.png|Text files (*.txt)|*.txt|All files (*.*)|*.*"; // Filter files by extension
 
             // Show open file dialog box
             Nullable<bool> result = dlg.ShowDialog();
@@ -119,12 +143,14 @@ namespace MailCloud
             {
                 // Open document
                 filename = dlg.FileName;
+                lbFiles.Items.Add(filename);
             }
         }
 
-        private void btnSend_Click(object sender, RoutedEventArgs e)
+        private async void btnSend_Click(object sender, RoutedEventArgs e)
         {
-            SendMail();
+            await SendMail();
         }
+        #endregion
     }
 }
