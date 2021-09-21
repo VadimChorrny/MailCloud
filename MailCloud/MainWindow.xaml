@@ -5,57 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MailCloud"
         mc:Ignorable="d"
-        Title="Mail Cload by Chorrny Inc" Height="450" Width="800">
+        Title="Mail Cload by Chorrny Inc" Height="700" Width="1200">
     <Grid>
-        <!--Authorization-->
-        <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Visible" x:Name="gridAuth">
-            <StackPanel>
-                <TextBlock Text="Enter username" FontSize="30" />
-                <TextBox x:Name="tbUsername" FontSize="30" />
-                <TextBlock Text="Enter password" FontSize="30"/>
-                <TextBox x:Name="tbPassword" FontSize="30" />
-                <Button x:Name="btnLogin" Height="50" Content="Login" FontSize="30" Margin="0 30 0 0"  Click="btnLogin_Click"/>
-            </StackPanel>
-        </Grid>
-        <!--Send Message-->
-        <Grid Visibility="Hidden" x:Name="gridMessage">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="4*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-            </Grid.RowDefinitions>
-
-            <WrapPanel Grid.Row="0" VerticalAlignment="Center">
-                <TextBlock Text="To: " FontSize="30" Margin="40 0 0 0"/>
-                <TextBox x:Name="tbTo" FontSize="30" Width="300" Margin="65 0 0 0" />
-            </WrapPanel>
-            <WrapPanel Grid.Row="1" VerticalAlignment="Center">
-                <TextBlock Text="From: " FontSize="30" Margin="40 0 0 0"/>
-                <TextBox x:Name="tbFrom" FontSize="30" Width="300" Margin="25 0 0 0" />
-            </WrapPanel>
-            <WrapPanel Grid.Row="2" VerticalAlignment="Center">
-                <TextBlock Text="Theme: " FontSize="30" Margin="40 0 0 0"/>
-                <TextBox x:Name="tbTheme" FontSize="30" Width="300" Margin="5 0 0 0" />
-            </WrapPanel>
-
-            <WrapPanel Grid.Row="3">
-                <TextBox Text="Enter text" FontSize="30" Name="tbBody" Height="180" Width="792" />
-            </WrapPanel>
-
-            <WrapPanel Grid.Row="4" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <ListBox  Width="700" Height="30" Name="lbFiles" FontSize="25" />
-            </WrapPanel>
-
-            <WrapPanel Grid.Row="5" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <Button Content="Open file" FontSize="30" Width="700" Name="btnOpenFile" Foreground="Azure" Click="btnOpenFile_Click" />
-            </WrapPanel>
-            <WrapPanel Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <Button Width="700" FontSize="30" Content="Send" Name="btnSend" Background="LightGreen" Foreground="White" Click="btnSend_Click" />
-            </WrapPanel>
-        </Grid>
+        <Frame x:Name="Main" />
     </Grid>
 </Window>

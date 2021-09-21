@@ -1,0 +1,31 @@
+﻿<Page x:Class="MailCloud.Pages.ReedMessagePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:MailCloud.Pages"
+      mc:Ignorable="d" 
+      d:DesignHeight="700" d:DesignWidth="1200"
+      Title="ReedMessagePage">
+
+    <Grid Background="White">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1.2*" />
+            <ColumnDefinition Width="2*" />
+        </Grid.ColumnDefinitions>
+        
+        <!--Folder and other-->
+        <Grid Grid.Column="0" >
+            <TreeView Name="tvFolders" FontSize="30" Background="#263142">
+                <TreeViewItem Name="tvInput" FontSize="30" Foreground="White" Selected="tvInput_Selected" FontWeight="Bold">
+                </TreeViewItem>
+            </TreeView>
+        </Grid>
+        
+        <!--Preview mail-->
+        <Grid Grid.Column="1">
+            <ListBox x:Name="lbPreviewMail" FontSize="30" Foreground="WhiteSmoke" Background="Gray" FontWeight="Bold" />
+        </Grid>
+    </Grid>
+</Page>
