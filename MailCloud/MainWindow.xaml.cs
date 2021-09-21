@@ -1,4 +1,5 @@
-﻿using MailCloud.EF;
+﻿using AE.Net.Mail;
+using MailCloud.EF;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -29,6 +30,7 @@ namespace MailCloud
         UserModel userModel = null;
         string filename;
         string server = "smtp.gmail.com"; // sets the server address
+        static ImapClient IC;
         int port = 587; //sets the server port
         #endregion
 
@@ -115,6 +117,21 @@ namespace MailCloud
             client.SendAsync(message, "ChorrnyToken");
             await WriteMessageInDataBase(tbFrom.Text, tbTo.Text, tbTheme.Text, tbBody.Text);
             return Task.CompletedTask;
+        }
+        public void ReedMail()
+        {
+            IC = new ImapClient("imap.gmail.com", "prodoq@gmail.com", "r4e3w2q1", AuthMethods.Login, 587, true);
+            IC.SelectMailbox("INBOX");
+            var email = IC.GetMessage(0);
+
+            // reed
+            // lbAllMessages.Items.Add(email.Subject);
+
+            // write
+            // foreach(var item in lbAllMessages.SelectedItem)
+            // {
+            //     IC.DeleteMessage(item);
+            // }
         }
 
         private void Client_SendCompleted(object sender, AsyncCompletedEventArgs e)
