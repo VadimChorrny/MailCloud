@@ -69,10 +69,11 @@ namespace MailCloud.Pages
         private void tvInput_Selected(object sender, RoutedEventArgs e)
         {
             client = new MailClient("TryIt");
-            client.SelectFolder(client.Imap4Folders[1].SubFolders[1]);
+
+            client.SelectFolder(client.Imap4Folders[0].SubFolders[1]);
 
             // get mails in selected folder
-            MailInfo[] messages = client.GetMail();
+            MailInfo[] messages = client.GetMailInfos();
 
             // demo-view
             foreach (var item in messages)

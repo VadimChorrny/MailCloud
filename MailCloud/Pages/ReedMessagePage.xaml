@@ -27,5 +27,10 @@
         <Grid Grid.Column="1">
             <ListBox x:Name="lbPreviewMail" FontSize="30" Foreground="WhiteSmoke" Background="Gray" FontWeight="Bold" />
         </Grid>
+        
+        <!--All mail-->
+        <Grid Grid.Column="2">
+            <ListBox x:Name="lbAllMails" FontSize="30" FontWeight="Bold" />
+        </Grid>
     </Grid>
 </Page>
