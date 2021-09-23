@@ -30,21 +30,24 @@ namespace MailCloud.Pages
         public ReedMessagePage()
         {
             InitializeComponent();
+            client = new MailClient("TryIt");
             LoadFolders();
+
         }
         public void LoadFolders()
         {
             tvInput.Header = "INPUT";
             server = new MailServer(
                 "imap.gmail.com",
-                "prodoq@gmail.com",
-                "r4e3w2q1",
+                "chorrnyinc@gmail.com",
+                "epvytbgottgvwexh",
                 ServerProtocol.Imap4)
             {
                 SSLConnection = true,
                 Port = 993
             };
-            client = new MailClient("TryIt"); // trial version
+
+            client = new MailClient("TryIt");
 
             try
             {
@@ -68,19 +71,57 @@ namespace MailCloud.Pages
         // maybe for preview
         private void tvInput_Selected(object sender, RoutedEventArgs e)
         {
-            client = new MailClient("TryIt");
-
-            client.SelectFolder(client.Imap4Folders[0].SubFolders[1]);
-
-            // get mails in selected folder
-            MailInfo[] messages = client.GetMailInfos();
-
-            // demo-view
-            foreach (var item in messages)
-            {
-                Mail message = client.GetMail(item);
-                lbPreviewMail.Items.Add(/*message.Headers+"\n"+*/message.Subject);
-            }
+            _ = Handler();
         }
+
+        private async Task Handler()
+        {
+            await LoadPreview();
+        }
+
+        private Task LoadPreview()
+        {
+            try
+            {
+                return Task.Run(() =>
+                {
+                    if(!lbPreviewMail.Items.IsEmpty)
+                    {
+                        Application.Current.Dispatcher.Invoke(new Action(() =>
+                        {
+                            lbPreviewMail.Items.Clear();
+                        }));
+                    }
+                    client.SelectFolder(client.Imap4Folders[0]);
+
+                    // get mails in selected folder
+                    MailInfo[] messages = client.GetMailInfos();
+
+                    // demo-view
+                    Application.Current.Dispatcher.Invoke(new Action(() =>
+                    {
+                        foreach (var item in messages)
+                        {
+                            Mail message = client.GetMail(item);
+                            lbPreviewMail.Items.Add(message.From);
+                        }
+                    }));
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+            return Task.CompletedTask;
+        }
+        private Task LoasFull()
+        {
+            return Task.Run(() => 
+            {
+                
+            });
+        }
+
+
     }
 }
