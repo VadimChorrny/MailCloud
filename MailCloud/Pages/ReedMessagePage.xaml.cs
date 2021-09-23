@@ -77,6 +77,7 @@ namespace MailCloud.Pages
         private async Task Handler()
         {
             await LoadPreview();
+            await LoadFull();
         }
 
         private Task LoadPreview()
@@ -85,7 +86,7 @@ namespace MailCloud.Pages
             {
                 return Task.Run(() =>
                 {
-                    if(!lbPreviewMail.Items.IsEmpty)
+                    if (!lbPreviewMail.Items.IsEmpty)
                     {
                         Application.Current.Dispatcher.Invoke(new Action(() =>
                         {
@@ -114,11 +115,43 @@ namespace MailCloud.Pages
             }
             return Task.CompletedTask;
         }
-        private Task LoasFull()
+        private Task LoadFull()
         {
-            return Task.Run(() => 
+            return Task.Run(() =>
             {
-                
+                try
+                {
+                    if (!lbAllMails.Items.IsEmpty)
+                    {
+                        Application.Current.Dispatcher.Invoke(new Action(() =>
+                        {
+                            lbAllMails.Items.Clear();
+                        }));
+                    }
+                    client.SelectFolder(client.Imap4Folders[0]);
+
+                    // get mails in selected folder
+                    MailInfo[] messages = client.GetMailInfos();
+
+                    // demo-view
+                    Application.Current.Dispatcher.Invoke(new Action(() =>
+                    {
+                        foreach (var item in messages)
+                        {
+                            Mail message = client.GetMail(item);
+                            lbAllMails.Items.Add(message.From + "\n"
+                                + message.Headers + "\n"
+                                + message.Subject + "\n"
+                                + message.SentDate + "\n"
+                                + message.TextBody
+                                );
+                        }
+                    }));
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
             });
         }
 
