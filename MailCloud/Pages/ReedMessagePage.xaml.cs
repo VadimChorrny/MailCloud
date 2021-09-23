@@ -155,6 +155,9 @@ namespace MailCloud.Pages
             });
         }
 
-
+        private void btnSendMessage_Click(object sender, RoutedEventArgs e)
+        {
+            SendPage send = new SendPage();
+        }
     }
 }

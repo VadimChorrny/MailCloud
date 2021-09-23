@@ -103,6 +103,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Pages\SendPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Migrations\202109181618065_InitialCreate.cs" />
@@ -127,6 +131,9 @@
     </Compile>
     <Compile Include="Pages\ReedMessagePage.xaml.cs">
       <DependentUpon>ReedMessagePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\SendPage.xaml.cs">
+      <DependentUpon>SendPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
