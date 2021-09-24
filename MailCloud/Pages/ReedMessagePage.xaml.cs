@@ -36,7 +36,7 @@ namespace MailCloud.Pages
         }
         public void LoadFolders()
         {
-            tvInput.Header = "INPUT";
+            tvFolders.Header = "INPUT";
             server = new MailServer(
                 "imap.gmail.com",
                 "chorrnyinc@gmail.com",
@@ -119,8 +119,8 @@ namespace MailCloud.Pages
         {
             return Task.Run(() =>
             {
-                try
-                {
+                //try
+                //{
                     if (!lbAllMails.Items.IsEmpty)
                     {
                         Application.Current.Dispatcher.Invoke(new Action(() =>
@@ -147,11 +147,11 @@ namespace MailCloud.Pages
                                 );
                         }
                     }));
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString());
-                }
+                //}
+                //catch (Exception ex)
+                //{
+                //    MessageBox.Show(ex.ToString());
+                //}
             });
         }
 

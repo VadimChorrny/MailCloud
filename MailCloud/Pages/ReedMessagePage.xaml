@@ -18,11 +18,12 @@
         <!--Folder and other-->
         <Grid Grid.Column="0" >
             <StackPanel>
-                <TreeView Name="tvFolders" FontSize="30" Background="#263142">
-                    <TreeViewItem Name="tvInput" FontSize="30" Foreground="White" Selected="tvInput_Selected" FontWeight="Bold">
+                <TreeView FontSize="30" Background="#263142" >
+                    <TreeViewItem Name="tvFolders" FontSize="30" Foreground="White" FontWeight="Bold">
+                        <TreeViewItem Name="tvInput" FontSize="25" Foreground="White" Selected="tvInput_Selected" />
                     </TreeViewItem>
                 </TreeView>
-                <Button x:Name="btnSendMessage" FontSize="30" Content="Send Message" Click="btnSendMessage_Click"  />
+                <Button x:Name="btnSendMessage" Height="50" FontSize="30" Content="Send Message" Click="btnSendMessage_Click"  />
             </StackPanel>
         </Grid>
 
