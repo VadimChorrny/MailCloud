@@ -1,4 +1,9 @@
-﻿using AE.Net.Mail;
+﻿using MailKit;
+using MailKit.Net.Imap;
+using MailKit.Net.Smtp;
+using MailKit.Search;
+using MailKit.Security;
+using MimeKit;
 using MailCloud.EF;
 using System;
 using System.Collections.Generic;
@@ -18,6 +23,13 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AE.Net.Mail;
+using MailCloud.Pages;
+using EAGetMail;
+using ImapClient = MailKit.Net.Imap.ImapClient;
+using System.Threading;
+using MailCloud.Service;
+using System.Collections.ObjectModel;
 
 namespace MailCloud
 {
@@ -26,148 +38,170 @@ namespace MailCloud
     /// </summary>
     public partial class MainWindow : Window
     {
-        #region property
-        UserModel userModel = null;
-        string filename;
-        string server = "smtp.gmail.com"; // sets the server address
-        static ImapClient IC;
-        int port = 587; //sets the server port
-        #endregion
-
+        private MailClient client = null;
+        public bool IsWhite { get; set; } = true;
         public MainWindow()
         {
             InitializeComponent();
-            userModel = new UserModel();
-            tbUsername.Text = userModel.Accounts.Select(a => a.Username).First();
-            tbPassword.Text = userModel.Accounts.Select(a => a.Password).First();
+            client = new MailClient("TryIt");
         }
-
-        public void Authorizate()
+        private void btnSendMessage_Click(object sender, RoutedEventArgs e)
         {
-            try
+            SMTPSenderWindow send = new SMTPSenderWindow();
+            send.Show();
+        }
+        private void btnChangeTheme_Click(object sender, RoutedEventArgs e)
+        {
+            if (IsWhite)
             {
-                userModel = new UserModel();
-
-                if (userModel.Accounts.Select(a => a.Username == tbUsername.Text && a.Password == tbPassword.Text).First())
-                {
-                    gridAuth.Visibility = Visibility.Hidden;
-                    gridMessage.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    MessageBox.Show($"Your login: {tbUsername.Text}\n" +
-                        $"Your password: {tbPassword.Text}\n" +
-                        $"Is Worng!");
-                }
+                lbPreviewMail.Background = Brushes.Gray;
+                lbAllMessage.Background = Brushes.LightGray;
+                IsWhite = false;
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show(ex.ToString());
+                lbPreviewMail.Background = Brushes.Wheat;
+                lbAllMessage.Background = Brushes.White;
+                IsWhite = true;
             }
-
         }
-        private Task WriteMessageInDataBase(string from,string to,string theme,string body)
+
+        private void btnSearch_Click(object sender, RoutedEventArgs e)
         {
-            userModel = new UserModel();
-            userModel.Messages.Add(new Message()
+            lbPreviewMail.Items.Clear();
+            using (var client = new ImapClient())
             {
-                From = from,
-                To = to,
-                Theme = theme,
-                Body = body,
-                Time = DateTime.Now,
-                Date = DateTime.Now.Date
-            }) ;
-            userModel.SaveChanges();
-            return Task.CompletedTask;
-        }
-        public async Task<Task> SendMail()
-        {
-            // create a message object
-            MailMessage message = new MailMessage(tbFrom.Text, tbTo.Text, tbTheme.Text, tbBody.Text);
-            //using (StreamReader sr = new StreamReader("mail.html")) // reed our html-file
-            //{
-            //    message.Body = sr.ReadToEnd();
-            //}
-
-            message.Body = $"<h2>{tbBody.Text}</h2>";
-
-            message.IsBodyHtml = true;
-
-            message.Priority = MailPriority.High; // important
-            if (filename != null)
-            {
-                foreach (var item in lbFiles.Items)
+                using (var cancel = new CancellationTokenSource())
                 {
-                    message.Attachments.Add(new Attachment((string)item));
+
+                    client.Connect("imap.gmail.com", 993, true, cancel.Token);
+
+                    // If you want to disable an authentication mechanism,
+                    // you can do so by removing the mechanism like this:
+                    client.AuthenticationMechanisms.Remove("XOAUTH");
+
+                    client.Authenticate("chorrnyinc@gmail.com", "epvytbgottgvwexh", cancel.Token);
+
+                    // The Inbox folder is always available...
+                    var inbox = client.Inbox;
+                    inbox.Open(FolderAccess.ReadOnly, cancel.Token);
+                    // let's try searching for some messages...
+                    Application.Current.Dispatcher.Invoke(new Action(() =>
+                    {
+                        var query = SearchQuery.DeliveredAfter(DateTime.Parse("2021-01-01"))
+                        .And(SearchQuery.SubjectContains(tbSearching.Text)
+                        .And(SearchQuery.Seen));
+
+                        foreach (var uid in inbox.Search(query, cancel.Token))
+                        {
+                            var message = inbox.GetMessage(uid, cancel.Token);
+                            lbPreviewMail.Items.Add(message.Subject);
+                        }
+                    }));
                 }
             }
-
-            // create a send object
-            SmtpClient client = new SmtpClient(server, port);
-            client.EnableSsl = true;
-
-            // settings for sending mail
-            // vlad email and password xD
-            client.Credentials = new NetworkCredential("prodoq@gmail.com", "r4e3w2q1");
-
-            client.SendCompleted += Client_SendCompleted;
-
-            // call asynchronous message sending
-            client.SendAsync(message, "ChorrnyToken");
-            await WriteMessageInDataBase(tbFrom.Text, tbTo.Text, tbTheme.Text, tbBody.Text);
-            return Task.CompletedTask;
-        }
-        public void ReedMail()
-        {
-            IC = new ImapClient("imap.gmail.com", "prodoq@gmail.com", "r4e3w2q1", AuthMethods.Login, 587, true);
-            IC.SelectMailbox("INBOX");
-            var email = IC.GetMessage(0);
-
-            // reed
-            // lbAllMessages.Items.Add(email.Subject);
-
-            // write
-            // foreach(var item in lbAllMessages.SelectedItem)
-            // {
-            //     IC.DeleteMessage(item);
-            // }
         }
 
-        private void Client_SendCompleted(object sender, AsyncCompletedEventArgs e)
+        private void btnLoad_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show($"Message was sent! Token:{e.UserState}");
+            HandlerLoadPreview();
         }
-
-        #region buttons
-        private void btnLogin_Click(object sender, RoutedEventArgs e)
+        private async void HandlerLoadPreview() => await LoadPreview();
+        private Task LoadPreview() // or add async
         {
-            Authorizate();
-        }
-
-        private void btnOpenFile_Click(object sender, RoutedEventArgs e)
-        {
-            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.FileName = "My dick"; // Default file name
-            dlg.DefaultExt = "*"; // Default file extension
-            dlg.Filter = "Only naked photo (.png)|*.png|Text files (*.txt)|*.txt|All files (*.*)|*.*"; // Filter files by extension
-
-            // Show open file dialog box
-            Nullable<bool> result = dlg.ShowDialog();
-
-            // Process open file dialog box results
-            if (result == true)
+            return Task.Run(() =>
             {
-                // Open document
-                filename = dlg.FileName;
-                lbFiles.Items.Add(filename);
-            }
+                if(!lbPreviewMail.Items.IsEmpty)
+                {
+                    Application.Current.Dispatcher.Invoke(new Action(() =>
+                    {
+                        lbPreviewMail.Items.Clear();
+                    }));
+                }
+                using (var client = new ImapClient())
+                {
+                    using (var cancel = new CancellationTokenSource())
+                    {
+                        client.Connect("imap.gmail.com", 993, true, cancel.Token);
+
+                        // If you want to disable an authentication mechanism,
+                        // you can do so by removing the mechanism like this:
+                        client.AuthenticationMechanisms.Remove("XOAUTH");
+
+                        client.Authenticate("chorrnyinc@gmail.com", "epvytbgottgvwexh", cancel.Token);
+
+                        // The Inbox folder is always available...
+                        var inbox = client.Inbox;
+                        inbox.Open(FolderAccess.ReadOnly, cancel.Token);
+                        Application.Current.Dispatcher.Invoke(new Action(() =>
+                        {
+                            txtCountMessage.Text = inbox.Count.ToString();
+                        }));
+                        // download each message based on the message index
+                        for (int i = 0; i < inbox.Count; i++)
+                        {
+                            Application.Current.Dispatcher.Invoke(new Action(() =>
+                            {
+                                var message = inbox.GetMessage(i, cancel.Token);
+                                lbPreviewMail.Items.Add(message.Subject);
+                            }));
+                        }
+                    }
+                }
+            });
+        }
+        private void lbPreviewMail_SelectionChanged_1(object sender, SelectionChangedEventArgs e)
+        {
+            HandlerLoadAllMessage();
+        }
+        private async void HandlerLoadAllMessage() => await LoadAllMessage();
+        private Task LoadAllMessage()
+        {
+            return Task.Run(() =>
+            {
+                try
+                {
+                    using (var client = new ImapClient())
+                    {
+                        using (var cancel = new CancellationTokenSource())
+                        {
+
+                            client.Connect("imap.gmail.com", 993, true, cancel.Token);
+
+                            // If you want to disable an authentication mechanism,
+                            // you can do so by removing the mechanism like this:
+                            client.AuthenticationMechanisms.Remove("XOAUTH");
+
+                            client.Authenticate("chorrnyinc@gmail.com", "epvytbgottgvwexh", cancel.Token);
+
+                            // The Inbox folder is always available...
+                            var inbox = client.Inbox;
+                            inbox.Open(FolderAccess.ReadOnly, cancel.Token);
+                            // let's try searching for some messages...
+                            Application.Current.Dispatcher.Invoke(new Action(() =>
+                            {
+                                var query = SearchQuery.DeliveredAfter(DateTime.Parse("2021-01-01"))
+                                .And(SearchQuery.SubjectContains((string)lbPreviewMail.SelectedItem))
+                                .And(SearchQuery.Seen);
+
+                                foreach (var uid in inbox.Search(query, cancel.Token))
+                                {
+                                    var message = inbox.GetMessage(uid, cancel.Token);
+                                    txtFrom.Text = message.From.ToString();
+                                    txtSubject.Text = message.Subject;
+                                    txtSendDate.Text = message.Date.ToString();
+                                    txtBody.Text = message.TextBody;
+                                }
+                            }));
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+            });
         }
 
-        private async void btnSend_Click(object sender, RoutedEventArgs e)
-        {
-            await SendMail();
-        }
-        #endregion
     }
 }

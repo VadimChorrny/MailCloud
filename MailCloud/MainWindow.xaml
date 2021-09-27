@@ -3,59 +3,74 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MailCloud"
+        xmlns:local="clr-namespace:MailCloud" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="Mail Cload by Chorrny Inc" Height="450" Width="800">
-    <Grid>
-        <!--Authorization-->
-        <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Visible" x:Name="gridAuth">
-            <StackPanel>
-                <TextBlock Text="Enter username" FontSize="30" />
-                <TextBox x:Name="tbUsername" FontSize="30" />
-                <TextBlock Text="Enter password" FontSize="30"/>
-                <TextBox x:Name="tbPassword" FontSize="30" />
-                <Button x:Name="btnLogin" Height="50" Content="Login" FontSize="30" Margin="0 30 0 0"  Click="btnLogin_Click"/>
-            </StackPanel>
+        Title="Mail Cload by Chorrny Inc" Height="700" Width="1200">
+    <Grid Background="White">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1.2*" />
+            <ColumnDefinition Width="2*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="8.2*" />
+        </Grid.RowDefinitions>
+
+        <!--Toolbar-->
+        <materialDesign:ColorZone 
+        Grid.ColumnSpan="2" Grid.Row="0"
+  Mode="PrimaryMid"
+  Padding="16">
+            <DockPanel>
+                <ToggleButton x:Name="btnChangeTheme" Click="btnChangeTheme_Click"
+      Style="{DynamicResource MaterialDesignSwitchAccentToggleButton}"
+      VerticalAlignment="Center"
+      DockPanel.Dock="Right" />
+                <StackPanel
+      Orientation="Horizontal"
+      materialDesign:RippleAssist.IsCentered="True">
+                    <Button x:Name="btnLoad" Click="btnLoad_Click" >
+                        <materialDesign:PackIcon Kind="Reload" Height="30" Width="25" />
+                    </Button>
+                    <TextBox
+  materialDesign:HintAssist.Hint="searching" Name="tbSearching"
+  MinWidth="72" Margin="30 0 0 0" Width="200" />
+                    <Button x:Name="btnSearch" Click="btnSearch_Click"
+        Style="{DynamicResource MaterialDesignToolForegroundButton}"
+        Margin="8 0 0 0"
+        Panel.ZIndex="0">
+                        <materialDesign:PackIcon
+          Kind="Send" />
+                    </Button>
+                    <TextBlock Text="Count Message" VerticalAlignment="Center" FontSize="20" FontWeight="Medium" Margin="30 0 0 0" />
+                    <TextBlock x:Name="txtCountMessage" FontSize="20" Margin="20 0 0 0" FontWeight="Medium" />
+                    <Button x:Name="btnSendMessage" FontSize="20" Margin="20 0 0 0" FontWeight="Medium" Content="Send Message" Click="btnSendMessage_Click" />
+                </StackPanel>
+            </DockPanel>
+        </materialDesign:ColorZone>
+
+        <!--Preview mail-->
+        <Grid Grid.Column="0" Grid.Row="1">
+            <ListBox x:Name="lbPreviewMail" FontSize="30" Foreground="WhiteSmoke" Background="#E5D9D6" FontWeight="Bold" SelectionChanged="lbPreviewMail_SelectionChanged_1" />
         </Grid>
-        <!--Send Message-->
-        <Grid Visibility="Hidden" x:Name="gridMessage">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="4*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-            </Grid.RowDefinitions>
 
-            <WrapPanel Grid.Row="0" VerticalAlignment="Center">
-                <TextBlock Text="To: " FontSize="30" Margin="40 0 0 0"/>
-                <TextBox x:Name="tbTo" FontSize="30" Width="300" Margin="65 0 0 0" />
-            </WrapPanel>
-            <WrapPanel Grid.Row="1" VerticalAlignment="Center">
-                <TextBlock Text="From: " FontSize="30" Margin="40 0 0 0"/>
-                <TextBox x:Name="tbFrom" FontSize="30" Width="300" Margin="25 0 0 0" />
-            </WrapPanel>
-            <WrapPanel Grid.Row="2" VerticalAlignment="Center">
-                <TextBlock Text="Theme: " FontSize="30" Margin="40 0 0 0"/>
-                <TextBox x:Name="tbTheme" FontSize="30" Width="300" Margin="5 0 0 0" />
-            </WrapPanel>
-
-            <WrapPanel Grid.Row="3">
-                <TextBox Text="Enter text" FontSize="30" Name="tbBody" Height="180" Width="792" />
-            </WrapPanel>
-
-            <WrapPanel Grid.Row="4" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <ListBox  Width="700" Height="30" Name="lbFiles" FontSize="25" />
-            </WrapPanel>
-
-            <WrapPanel Grid.Row="5" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <Button Content="Open file" FontSize="30" Width="700" Name="btnOpenFile" Foreground="Azure" Click="btnOpenFile_Click" />
-            </WrapPanel>
-            <WrapPanel Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <Button Width="700" FontSize="30" Content="Send" Name="btnSend" Background="LightGreen" Foreground="White" Click="btnSend_Click" />
-            </WrapPanel>
+        <!--All mail-->
+        <Grid Grid.Column="1" Grid.Row="1">
+            <ListBox ScrollViewer.VerticalScrollBarVisibility="Visible">
+                <ListBoxItem Name="lbAllMessage">
+                    <StackPanel>
+                        <TextBlock Text="From: " FontSize="30"/>
+                        <TextBlock x:Name="txtFrom" TextWrapping="Wrap" FontSize="30" Margin="10" />
+                        <TextBlock Text="Subject: " FontSize="30"/>
+                        <TextBlock x:Name="txtSubject" TextWrapping="Wrap" FontSize="30" Margin="10" />
+                        <TextBlock Text="Send date: " FontSize="30"/>
+                        <TextBlock x:Name="txtSendDate" TextWrapping="Wrap" FontSize="30" Margin="10" />
+                        <TextBlock Text="Text: " FontSize="30" Margin="10" TextWrapping="Wrap" />
+                        <TextBox Name="txtBody" FontSize="33" Margin="10" TextWrapping="Wrap" IsReadOnly="True" HorizontalScrollBarVisibility="Auto" />
+                    </StackPanel>
+                </ListBoxItem>
+            </ListBox>
         </Grid>
     </Grid>
 </Window>
