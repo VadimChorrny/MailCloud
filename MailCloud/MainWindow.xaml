@@ -6,7 +6,60 @@
         xmlns:local="clr-namespace:MailCloud"
         mc:Ignorable="d"
         Title="Mail Cload by Chorrny Inc" Height="700" Width="1200">
-    <Grid>
-        <Frame x:Name="Main" />
+    <Grid Background="White">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1.2*" />
+            <ColumnDefinition Width="2*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="15*" />
+        </Grid.RowDefinitions>
+
+        <ToolBar Grid.Row="0" Grid.ColumnSpan="3" Name="toolbar">
+            <TextBlock Text="Current user: chorrny228@gmail.com" FontSize="20" FontWeight="Bold" />
+            <TextBlock Text="Unread message: " Name="txtCountMessage" Margin="30 0 0 0" FontSize="20" FontWeight="Bold" />
+            <Button Width="100" Content="About" Name="btnAbout" FontSize="50" Margin="30 0 0 0"/>
+            <Button Width="100" Content="Settings" Name="btnSettings" FontSize="50" Margin="30 0 0 0"/>
+        </ToolBar>
+
+        <!--Folder and other-->
+        <Grid Grid.Column="0" Grid.Row="1" >
+            <StackPanel>
+                <TreeView FontSize="30" Background="#263142" >
+                    <TreeViewItem Name="tvFolders" FontSize="30" Foreground="White" FontWeight="Bold">
+                        <TreeViewItem Name="tvInput" FontSize="25" Foreground="White" Selected="tvInput_Selected" />
+                    </TreeViewItem>
+                </TreeView>
+                <Button x:Name="btnSendMessage" Height="50" FontSize="30" Content="Send Message" Click="btnSendMessage_Click"  />
+            </StackPanel>
+        </Grid>
+
+        <!--Preview mail-->
+        <Grid Grid.Column="1" Grid.Row="1">
+            <ListBox x:Name="lbPreviewMail" FontSize="30" Foreground="WhiteSmoke" Background="Gray" FontWeight="Bold" SelectionChanged="lbPreviewMail_SelectionChanged" />
+        </Grid>
+
+        <!--All mail-->
+        <Grid Grid.Column="2" Grid.Row="1">
+            <ListBox>
+                <ListBoxItem>
+                    <StackPanel>
+                        <TextBlock Text="From: " FontSize="30"/>
+                        <TextBlock x:Name="txtFrom" TextWrapping="Wrap" FontSize="30" Margin="10" />
+                        <TextBlock Text="Header: " FontSize="30"/>
+                        <TextBlock x:Name="txtHeader" TextWrapping="Wrap" FontSize="30" Margin="10" />
+                        <TextBlock Text="Subject: " FontSize="30"/>
+                        <TextBlock x:Name="txtSubject" TextWrapping="Wrap" FontSize="30" Margin="10" />
+                        <TextBlock Text="Send date: " FontSize="30"/>
+                        <TextBlock x:Name="txtSendDate" TextWrapping="Wrap" FontSize="30" Margin="10" />
+                        <TextBlock Text="Text: " FontSize="30" Margin="10" TextWrapping="Wrap" />
+                        <TextBlock Name="txtBody" FontSize="33" Margin="10" TextWrapping="Wrap" />
+                    </StackPanel>
+                </ListBoxItem>
+            </ListBox>
+        </Grid>
     </Grid>
 </Window>

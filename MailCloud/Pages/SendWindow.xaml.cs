@@ -21,9 +21,9 @@ using System.Windows.Shapes;
 namespace MailCloud.Pages
 {
     /// <summary>
-    /// Логика взаимодействия для SendPage.xaml
+    /// Логика взаимодействия для SendWindow.xaml
     /// </summary>
-    public partial class SendPage : Page
+    public partial class SendWindow : Page
     {
         #region property
         UserModel userModel = null;
@@ -32,7 +32,8 @@ namespace MailCloud.Pages
         static ImapClient IC;
         int port = 587; //sets the server port
         #endregion
-        public SendPage()
+
+        public SendWindow()
         {
             InitializeComponent();
         }
@@ -93,12 +94,10 @@ namespace MailCloud.Pages
         {
             MessageBox.Show($"Message was sent! Token:{e.UserState}");
         }
-
         private async void btnSend_Click(object sender, RoutedEventArgs e)
         {
             await SendMail();
         }
-
         private void btnOpenFile_Click(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
