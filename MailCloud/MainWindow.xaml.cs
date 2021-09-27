@@ -28,6 +28,8 @@ using MailCloud.Pages;
 using EAGetMail;
 using ImapClient = MailKit.Net.Imap.ImapClient;
 using System.Threading;
+using MailCloud.Service;
+using System.Collections.ObjectModel;
 
 namespace MailCloud
 {
@@ -36,61 +38,86 @@ namespace MailCloud
     /// </summary>
     public partial class MainWindow : Window
     {
-        private MailServer server = null;
         private MailClient client = null;
+        public bool IsWhite { get; set; } = true;
         public MainWindow()
         {
             InitializeComponent();
             client = new MailClient("TryIt");
-            LoadFolders();
         }
-        public void LoadFolders()
+        private void btnSendMessage_Click(object sender, RoutedEventArgs e)
         {
-            #region connect
-            tvFolders.Header = "INPUT";
-            server = new MailServer(
-                "imap.gmail.com",
-                "chorrnyinc@gmail.com",
-                "epvytbgottgvwexh",
-                ServerProtocol.Imap4)
+            SMTPSenderWindow send = new SMTPSenderWindow();
+            send.Show();
+        }
+        private void btnChangeTheme_Click(object sender, RoutedEventArgs e)
+        {
+            if (IsWhite)
             {
-                SSLConnection = true,
-                Port = 993
-            };
+                lbPreviewMail.Background = Brushes.Gray;
+                lbAllMessage.Background = Brushes.LightGray;
+                IsWhite = false;
+            }
+            else
+            {
+                lbPreviewMail.Background = Brushes.Wheat;
+                lbAllMessage.Background = Brushes.White;
+                IsWhite = true;
+            }
+        }
 
-            client = new MailClient("TryIt");
-            #endregion
-            try
+        private void btnSearch_Click(object sender, RoutedEventArgs e)
+        {
+            lbPreviewMail.Items.Clear();
+            using (var client = new ImapClient())
             {
-                client.Connect(server);
-                // show all folders
-                foreach (var f in client.GetFolders())
+                using (var cancel = new CancellationTokenSource())
                 {
-                    tvFolders.Items.Add(f.Name);
-                    foreach (var subF in f.SubFolders)
+
+                    client.Connect("imap.gmail.com", 993, true, cancel.Token);
+
+                    // If you want to disable an authentication mechanism,
+                    // you can do so by removing the mechanism like this:
+                    client.AuthenticationMechanisms.Remove("XOAUTH");
+
+                    client.Authenticate("chorrnyinc@gmail.com", "epvytbgottgvwexh", cancel.Token);
+
+                    // The Inbox folder is always available...
+                    var inbox = client.Inbox;
+                    inbox.Open(FolderAccess.ReadOnly, cancel.Token);
+                    // let's try searching for some messages...
+                    Application.Current.Dispatcher.Invoke(new Action(() =>
                     {
-                        tvInput.Items.Add(subF.Name);
-                    }
+                        var query = SearchQuery.DeliveredAfter(DateTime.Parse("2021-01-01"))
+                        .And(SearchQuery.SubjectContains(tbSearching.Text)
+                        .And(SearchQuery.Seen));
+
+                        foreach (var uid in inbox.Search(query, cancel.Token))
+                        {
+                            var message = inbox.GetMessage(uid, cancel.Token);
+                            lbPreviewMail.Items.Add(message.Subject);
+                        }
+                    }));
                 }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
         }
-        // maybe for preview
-        private void tvInput_Selected(object sender, RoutedEventArgs e)
+
+        private void btnLoad_Click(object sender, RoutedEventArgs e)
         {
-            _ = Handler();
+            HandlerLoadPreview();
         }
-        private async Task Handler()
-        {
-            await LoadPreview();
-        }
-        private Task LoadPreview()
+        private async void HandlerLoadPreview() => await LoadPreview();
+        private Task LoadPreview() // or add async
         {
             return Task.Run(() =>
             {
+                if(!lbPreviewMail.Items.IsEmpty)
+                {
+                    Application.Current.Dispatcher.Invoke(new Action(() =>
+                    {
+                        lbPreviewMail.Items.Clear();
+                    }));
+                }
                 using (var client = new ImapClient())
                 {
                     using (var cancel = new CancellationTokenSource())
@@ -123,16 +150,12 @@ namespace MailCloud
                 }
             });
         }
-
-        private void ClearMessage()
+        private void lbPreviewMail_SelectionChanged_1(object sender, SelectionChangedEventArgs e)
         {
-            txtFrom.Text = null;
-            txtHeader.Text = null;
-            txtSubject.Text = null;
-            txtSendDate.Text = null;
-            txtBody.Text = null;
+            HandlerLoadAllMessage();
         }
-        private Task LoadFull()
+        private async void HandlerLoadAllMessage() => await LoadAllMessage();
+        private Task LoadAllMessage()
         {
             return Task.Run(() =>
             {
@@ -157,7 +180,7 @@ namespace MailCloud
                             // let's try searching for some messages...
                             Application.Current.Dispatcher.Invoke(new Action(() =>
                             {
-                                var query = SearchQuery.DeliveredAfter(DateTime.Parse("2021-09-12"))
+                                var query = SearchQuery.DeliveredAfter(DateTime.Parse("2021-01-01"))
                                 .And(SearchQuery.SubjectContains((string)lbPreviewMail.SelectedItem))
                                 .And(SearchQuery.Seen);
 
@@ -166,7 +189,6 @@ namespace MailCloud
                                     var message = inbox.GetMessage(uid, cancel.Token);
                                     txtFrom.Text = message.From.ToString();
                                     txtSubject.Text = message.Subject;
-                                    txtHeader.Text = message.Headers.ToString();
                                     txtSendDate.Text = message.Date.ToString();
                                     txtBody.Text = message.TextBody;
                                 }
@@ -180,24 +202,6 @@ namespace MailCloud
                 }
             });
         }
-        private void btnSendMessage_Click(object sender, RoutedEventArgs e)
-        {
-            SendWindow send = new SendWindow();
-        }
-        /// <summary>
-        ///  MAYBE NEED CHANGE
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        /// <returns></returns>
-        /// 
-        private async Task HandlerTwo()
-        {
-            await LoadFull();
-        }
-        private void lbPreviewMail_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            HandlerTwo();
-        }
+
     }
 }

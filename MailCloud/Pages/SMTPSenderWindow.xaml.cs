@@ -15,15 +15,14 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace MailCloud.Pages
 {
     /// <summary>
-    /// Логика взаимодействия для SendWindow.xaml
+    /// Логика взаимодействия для SMTPSenderWindow.xaml
     /// </summary>
-    public partial class SendWindow : Page
+    public partial class SMTPSenderWindow : Window
     {
         #region property
         UserModel userModel = null;
@@ -32,12 +31,10 @@ namespace MailCloud.Pages
         static ImapClient IC;
         int port = 587; //sets the server port
         #endregion
-
-        public SendWindow()
+        public SMTPSenderWindow()
         {
             InitializeComponent();
         }
-
         private Task WriteMessageInDataBase(string from, string to, string theme, string body)
         {
             userModel = new UserModel();
